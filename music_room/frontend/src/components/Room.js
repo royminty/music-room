@@ -10,27 +10,34 @@ const Room = (props) => {
   // const navigate = useNavigate();
   // let param = useParams();
   // let roomCode = param.roomCode;
-
-  const [votesToSkip, setVotesToSkip] = useState(2);
-  const [guestCanPause, setGuestCanPause] = useState(false);
-  const [isHost, setIsHost] = useState(false);
   const navigate = useNavigate();
-  const { roomCode } = useParams();
+  let { roomCode } = useParams();
 
-  const getRoomDetails = () => {
-    fetch(`/api/get-room?code=${roomCode}`)
-      .then((response) => {
-        if (!response.ok) {
-          navigate('/');
-        }
-        return response.json();
-      })
-    .then((data) => {
+  let [votesToSkip, setVotesToSkip] = useState(2);
+  let [guestCanPause, setGuestCanPause] = useState(false);
+  let [isHost, setIsHost] = useState(false);
+  let [showSettings, setShowSettings] = useState(false);
+  
+
+  const getRoomDetails = async () => {
+    //let response = await fetch(`/api/get-room?code=${roomCode}`)
+    let response = await fetch("/api/get-room" + "?code=" + roomCode)
+    let data = await response.json()
+      if (!response.ok) {
+        navigate('/');
+        return
+      }
       setVotesToSkip(data.votes_to_skip);
       setGuestCanPause(data.guest_can_pause);
       setIsHost(data.is_host);
-    });
   };
+
+  useEffect(() => {
+    getRoomDetails();
+    if (isHost) {
+      console.log('Host Updated')
+    }
+  }, [isHost]);
 
   const leaveButtonPressed = () => {
     const requestOptions = {
@@ -38,15 +45,47 @@ const Room = (props) => {
       headers: {"Content-Type": "application/json"},
     };
     fetch("/api/leave-room", requestOptions).then((_response) => {
-      props.leaveRoomCallBack();
+      //props.leaveRoomCallBack();
       navigate('/');
     });
   }
 
-  useEffect(() => {
-    getRoomDetails();
-  }, []);
+  const updateShowSettings = (value) => {
+    setShowSettings(value)
+  }
 
+  const renderSettings = () => {
+    return <Grid container spacing={1}>
+      <Grid item xs={12} align="center">
+        <CreateRoomPage 
+          defaultUpdate={true} 
+          defaultSkipValue={votesToSkip}
+          defaultPause={guestCanPause}
+          defaultRoomCode={roomCode}
+          updateCallBack={getRoomDetails}
+        />
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Button variant="contained" color="secondary" onClick={() => updateShowSettings(false)}>
+          Close
+        </Button>
+      </Grid>
+    </Grid>
+  };
+
+  const renderSettingsButton = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button variant="contained" color="primary" onClick={() => updateShowSettings(true)}>
+          Settings
+        </Button>
+      </Grid>
+    );
+  }
+
+  if (showSettings) {
+    return renderSettings();
+  }
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
@@ -69,6 +108,7 @@ const Room = (props) => {
           Host: {isHost.toString()}
         </Typography>
       </Grid>
+      {isHost ? renderSettingsButton() : null}
       <Grid item xs={12} align="center">
         <Button variant="contained" color="secondary" onClick={leaveButtonPressed}>
           Leave Room

@@ -3,7 +3,7 @@ import RoomJoinPage from './RoomJoinPage';
 import CreateRoomPage from './CreateRoomPage';
 import Room from './Room';
 import { Grid, Button, ButtonGroup, Typography, Switch } from '@mui/material';
-import { BrowserRouter as Router, Route, Routes, Link, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Redirect, Navigate } from 'react-router-dom';
 
 const HomePage = () => {
   const [roomCode, setRoomCode] = useState(null);
