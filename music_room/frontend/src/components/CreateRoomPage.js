@@ -12,6 +12,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Collapse from '@mui/material/Collapse';
+import Alert from '@mui/material/Alert';
 
 // export default class CreateRoomPage extends Component {
 //export default function CreateRoomPage(props) {
@@ -21,6 +23,8 @@ const CreateRoomPage = ({defaultSkipValue=2, defaultPause=true, defaultUpdate=fa
   let[update, setUpdate] = useState(defaultUpdate);
   let[guestCanPause, setGuestCanPause] = useState(defaultPause);
   let[votesToSkip, setVotesToSkip] = useState(defaultSkipValue);
+  let [successMsg, setSuccessMsg] = useState('');
+  let [errorMsg, setErrorMsg] = useState('');
 
   // const handleVotesChange = event => {
   //   setVotesToSkip(event.target.value);
@@ -60,9 +64,9 @@ const CreateRoomPage = ({defaultSkipValue=2, defaultPause=true, defaultUpdate=fa
     };
     await fetch('/api/update-room', requestOptions).then((response) => {
       if (response.ok) {
-        console.log('Room updated successfully')
+        setSuccessMsg('Room updated successfully')
       } else {
-        console.log('Error updated room...')
+        setErrorMsg('Error updated room...')
       }
       updateCallBack()
     })
@@ -107,6 +111,29 @@ const CreateRoomPage = ({defaultSkipValue=2, defaultPause=true, defaultUpdate=fa
 
   return (
   <Grid container spacing={1}>
+      <Grid item xs={12} align="center">
+        <Collapse in={errorMsg != "" || successMsg != ""}>
+          {successMsg != "" ? (
+          <Alert 
+            severity="success" 
+            onClose={() => {
+              setSuccessMsg("");
+            }}
+          >
+              {successMsg}
+          </Alert>
+          ) : (
+          <Alert 
+            severity="error"
+            onClose={() => {
+              setErrorMsg('');
+            }}
+          >
+            {errorMsg}
+          </Alert>
+          )}
+        </Collapse>
+      </Grid>
       <Grid item xs={12} align="center">
         <Typography component='h4' variant='h4'>
           {title}

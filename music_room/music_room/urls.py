@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('', include('frontend.urls')) #when type a url that isn't admin or api, we can handle the urls from the frontend
+    path('', include('frontend.urls')), #when type a url that isn't admin or api, we can handle the urls from the frontend
+    path('spotify/', include('spotify.urls'))
 ]
