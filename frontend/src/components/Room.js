@@ -87,7 +87,6 @@ const Room = (props) => {
       headers: {"Content-Type": "application/json"},
     };
     fetch("/api/leave-room", requestOptions).then((_response) => {
-      //props.leaveRoomCallBack();
       navigate('/');
     });
   }
